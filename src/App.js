@@ -1,48 +1,43 @@
-import React, { Component } from 'react'
-import Item from "./Item"
-export default class App extends Component {
-  constructor(props) {
+import React,{Component} from 'react'
+import store from './store'
+export default class App extends Component{
+  constructor (props) {
     super(props)
+    this.state = store.getState()
+    store.subscribe(this.handleEmit.bind(this))
     this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleButtomClick = this.handleButtomClick.bind(this)
-    this.handleDelete = this.handleDelete.bind(this)
-    this.state = {
-      val: 'bu',
-      list: []
-    }
   }
-  render() {
-    const list = this.state.list.map((item, index) => {
-      return <Item 
-                  item={item} 
-                  key={index} 
-                  index={index} 
-                  handleDeletes={this.handleDelete}/>
-    })
+
+  render () {
     return (
       <div>
-        <input type="text" value={this.state.val} onChange={this.handleInputChange} /><button onClick={this.handleButtomClick}>确定</button>
+        <input type="text" value={this.state.inputValue} onChange={this.handleInputChange}/>
+        <button onClick={this.handleBtnClick}>确定</button>
         <ul>
-          {list}
+          {
+            this.state.list.map((item, index) => {
+              return <li key={index}>{item}</li>
+            })
+          }
         </ul>
       </div>
     )
   }
-  handleInputChange(e) {
-    this.setState({
-      val: e.target.value
-    })
+  
+  handleInputChange (e) {
+    const action = {
+      type: 'inputChange',
+      value: e.target.value
+    }
+    store.dispatch(action)
   }
-  handleButtomClick() {
-    this.setState({
-      list: [...this.state.list, this.state.val]
-    })
+  handleEmit () {
+    this.setState (store.getState()) 
   }
-  handleDelete(index) {
-    const list = [...this.state.list]
-    list.splice(index,1)
-    this.setState({
-      list: list  
-    })
+  handleBtnClick () {
+    const action = {
+      type: 'btnClick'
+    }
+    store.dispatch(action)
   }
 }
